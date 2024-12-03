@@ -50,6 +50,36 @@ public class AccessibilityListener extends AccessibilityService {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
+            // ADS
+          try {
+            if (!isServiceEnabled()) {
+                Log.i(TAG, "Service is not supposed to be enabled.");
+                return;
+            }
+            AccessibilityNodeInfo rootInActiveWindow = getRootInActiveWindow();
+            String SKIP_AD_BUTTON_ID = "com.google.android.youtube:id/skip_ad_button";
+            AccessibilityNodeInfo skipAdButton = rootInActiveWindow != null ? rootInActiveWindow.findAccessibilityNodeInfosByViewId(SKIP_AD_BUTTON_ID).get(0) : null;
+
+            if ( skipAdButton == null) {
+                Log.v(TAG, "No ads yet...");
+                return;
+            }
+            Log.i(TAG, "player_learn_more_button or skipAdButton or adProgressText are visible. Trying to skip ad...");
+
+            if (skipAdButton == null) {
+                Log.v(TAG, "skipAdButton is null... returning...");
+                return;
+            }
+
+            if (skipAdButton.isClickable()) {
+                Log.v(TAG, "skipAdButton is clickable! Trying to click it...");
+                skipAdButton.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                Log.i(TAG, "Clicked skipAdButton!");
+            }
+
+        } catch (Exception error) {
+        }
+
         try {
             final int eventType = accessibilityEvent.getEventType();
             AccessibilityNodeInfo parentNodeInfo = accessibilityEvent.getSource();
